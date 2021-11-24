@@ -1,0 +1,2 @@
+plotnine==0.8.0
+leidenalg=0.8.8
