@@ -1,0 +1,62 @@
+version: 1
+disable_existing_loggers: yes
+formatters:
+  simple:
+    format: "%(asctime)s %(name)s %(levelname)s: %(message)s"
+  extended:
+    format: "%(asctime)s - [%(levelname)s] - %(name)s - (%(filename)s).%(funcName)s(%(lineno)d) - %(message)s"
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: WARNING
+    formatter: extended
+    stream: ext://sys.stdout
+  file:
+    class: logging.handlers.RotatingFileHandler
+    level: DEBUG
+    formatter: extended
+    filename: default.log
+    mode: 'a'
+    maxBytes: 1000000 # 1MB
+    backupCount: 20
+    encoding: utf8
+loggers:
+  main:
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+  main_file:
+    level: DEBUG
+    handlers: [file]
+    propagate: no
+  main_console:
+    level: DEBUG
+    handlers: [console]
+    propagate: no
+  usrightmedia: # Automatically collect usrightmedia logs.
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  INCA: # Automatically collect INCA logs.
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  twarc: # Automatically collect twarc logs.
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  newsplease: # Automatically collect newsplease logs.
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  readability: # Automatically collect readability logs.
+    level: INFO
+    handlers: [console, file]
+    propagate: no
+  urlexpander: # Automatically collect urlexpander logs.
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+root:
+  level: DEBUG
+  handlers: [console, file]
