@@ -24,262 +24,227 @@ def get_mediacloud_outlet_ids():
     return df
 
 
-def get_media_netlocs(include_general=False,
-                    include_specialized = False,
-                    include_regional = False,
-                    include_public_service = False,
-                    include_unknown = False,
-                    include_gop = False,
-                    include_misc = False):
+def get_media_outlet_netloc(include_national = False,
+                             include_regional = False,
+                             include_gop = False,
+                             include_government = False):
 
-    netloc_groups = [['ABC News', 'abcnews.go.com', include_general, False],
-                    ['ABC News', 'abcn.ws', include_general, False], # ABC Radio
-                    ['American Renaissance', 'amren.com', include_general, True],
-                    ['AP News', 'apnews.com', include_general, False],
-                    ['Axios', 'axios.com', include_general, False],
-                    ['BBC', 'bbc.com', include_general, False],
-                    ['Bloomberg', 'bloomberg.com', include_general, False],
-                    ['Breitbart', 'breitbart.com', include_general, True],
-                    ['Buzzfeed News', 'buzzfeednews.com', include_general, False],
-                    ['CBS News', 'cbsnews.com', include_general, False],
-                    ['CBS News', 'cbsn.ws', include_general, False],
-                    ['CBS News', 'cbsloc.al', include_general, False], # could be put in 'regional'
-                    ['CNBC', 'cnbc.com', include_general, False],
-                    ['CNBC', 'cnb.cx', include_general, False],
-                    ['CNN', 'cnn.com', include_general, False],
-                    ['CNN', 'edition.cnn.com', include_general, False],
-                    ['CNN', 'cnn.it', include_general, False],
-                    ['CNS News', 'cnsnews.com', include_general, False], # conservative news site
-                    ['Daily Caller', 'dailycaller.com', include_general, True],
-                    ['Daily Caller', 'amp.dailycaller.com', include_general, True],
-                    ['Daily Signal', 'dailysignal.com', include_general, False],
-                    ['Daily Stormer', 'dailystormer.com', include_general, True],
-                    ['Daily Stormer', 'dailystormer.name', include_general, True],
-                    ['Daily Stormer', 'dailystormer.su', include_general, True],
-                    ['Fox', 'fxn.ws', include_general, True],
-                    ['Fox', 'foxbusiness.com', include_general, True],
-                    ['Fox', 'foxnews.com', include_general, True],
-                    ['Fox', '925foxnews.com', include_general, True],
-                    ['Fox', 'insider.foxnews.com', include_general, True],
-                    ['Fox', 'latino.foxnews.com', include_general, True],
-                    ['Fox', 'nation.foxnews.com', include_general, True],
-                    ['Fox', 'radio.foxnews.com', include_general, True],
-                    ['Fox', 'video.foxbusiness.com', include_general, True],
-                    ['Fox', 'video.foxnews.com', include_general, True],
-                    ['Fox', 'press.foxnews.com', include_general, True],
-                    ['Infowars', 'infowars.com', include_general, True],
-                    ['Infowars', 'archives.infowars.com', include_general, True],
-                    ['Just the News', 'justthenews.com', include_general, False], # https://capitolcommunicator.com/award-winning-journalist-john-solomon-launches-new-media-outlet/
-                    ['Los Angeles Times', 'latimes.com', include_general, False],
-                    ['National Review', 'nationalreview.com', include_general, False],
-                    ['NBC News', 'nbcnews.com', include_general, False],
-                    ['NBC News', 'nbcnews.to', include_general, False],
-                    ['Newsmax', 'newsmax.com', include_general, True],
-                    ['Newsmax', 'newsmaxtv.com', include_general, True],
-                    ['Newsweek', 'newsweek.com', include_general, False],
-                    ['New York Post', 'nypost.com', include_general, False],
-                    ['New York Times', 'nytimes.com', include_general, False],
-                    ['New York Times', 'nyti.ms', include_general, False],
-                    ['NPR', 'npr.org', include_general, False], # national public radio
-                    ['NPR', 'n.pr', include_general, False],
-                    ['One America News Network', 'oann.com', include_general, True],
-                    ['Politico', 'politico.com', include_general, False],
-                    ['Politico', 'politi.co', include_general, False],
-                    ['Real Clear Politics', 'realclearpolitics.com', include_general, False],
-                    ['Reuters', 'reuters.com', include_general, False],
-                    ['Reuters', 'reut.rs', include_general, False],
-                    ['Ripon Advance', 'riponadvance.com', include_general, False], # https://riponadvance.com/about-us/
-                    ['Roll Call', 'rollcall.com', include_general, False], # congressional news, legislative tracking and advocacy services
-                    ['Rush Limbaugh', 'rushlimbaugh.com', include_general, True],
-                    ['Sara Carter', 'saraacarter.com', include_general, False], # Fox News investigative reporter
-                    ['Sean Hannity', 'hannity.com', include_general, True],
-                    ['Sean Hannity', 'hann.it', include_general, True],
-                    ['The Blaze', 'theblaze.com', include_general, False], # conservative media, founded by Glenn Beck
-                    ['The Gateway Pundit', 'thegatewaypundit.com', include_general, True],
-                    ['The Epoch Times', 'theepochtimes.com', include_general, False],
-                    ['The Federalist', 'thefederalist.com', include_general, False],
-                    ['The Hill', 'thehill.com', include_general, False],
-                    ['The Hill', 'hill.cm', include_general, False],
-                    ['Time', 'time.com', include_general, False],
-                    ['Townhall', 'townhall.com', include_general, False], # conservative news and political commentary and analysis
-                    ['USA Today', 'eu.usatoday.com', include_general, False], # blocked due to GDPR?
-                    ['USA Today', 'usatoday.com', include_general, False],
-                    ['VDARE', 'vdare.com', include_general, True],
-                    ['Washington Free Beacon', 'freebeacon.com', include_general, False], # American conservative political journalism website launched in 2012
-                    ['Washington Examiner', 'washingtonexaminer.com', include_general, True],
-                    ['Washington Examiner', 'washex.am', include_general, True],
-                    ['Washington Post', 'washingtonpost.com', include_general, False],
-                    ['Washington Post', 'wapo.st', include_general, False],
-                    ['Washington Times', 'washingtontimes.com', include_general, False],
-                    
-                    # business/finance news
-                    ['Business Insider', 'businessinsider.com', include_specialized, False],
-                    ['MarketWatch', 'marketwatch.com', include_specialized, False],
-                    ['The Business Journals', 'bizjournals.com', include_specialized, False], # metropolitan business newsweeklies
-                    ['Wall Street Journal', 'on.wsj.com', include_specialized, False],
-                    ['Wall Street Journal', 'wsj.com', include_specialized, False],
-                    ['Yahoo Finance', 'finance.yahoo.com', include_specialized, False],
-                    ['Forbes', 'forbes.com', include_specialized, False],
-                    # Issue: pro-marriage, pro-life
-                    ['Family Research Council', 'frc.org', include_specialized, False],
-                    # agriculture
-                    ['Agri-Pulse', 'agri-pulse.com', include_specialized, False], 
-                    # military
-                    ['Military', 'army.mil', include_specialized, False], # could be under 'public service'
-                    ['Military', 'defensenews.com', include_specialized, False],
-                    ['Military', 'military.com', include_specialized, False],
-                    ['Military', 'militarytimes.com', include_specialized, False],
-                    ['Military', 'navy.mil', include_specialized, False], # could be under 'public service'
-                    ['Military', 'stripes.com', include_specialized, False], 
-                    # government/congressional coverage
-                    ['C-SPAN', 'c-span.org', include_specialized, False], # Cable-Satellite Public Affairs Network
-                    ['C-SPAN', 'cs.pn', include_specialized, False],
-                    ['GovTrack.us', 'govtrack.us', include_specialized, False],
-                    
-                    # public service
-                    ['Public: 2020 Census', 'my2020census.gov', include_public_service, False],
-                    ['Public: 2020 Census', '2020census.gov', include_public_service, False],
-                    ['Public: CDC', 'cdc.gov', include_public_service, False], # Center for Disease Control
-                    ['Public: Disaster Response', 'disasterassistance.gov', include_public_service, False],
-                    ['Public: Disaster Response', 'hurricanes.gov', include_public_service, False],
-                    ['Public: Disaster Response', 'nvoad.org', include_public_service, False],
-                    ['Public: Disaster Response', 'redcross.org', include_public_service, False],
-                    ['Public: Disaster Response', 'rdcrss.org', include_public_service, False],
-                    ['Public: Small Business Administration', 'sba.gov', include_public_service, False],
-                    ['Public: Take Back Day', 'takebackday.dea.gov', include_public_service, False],
-                    ['Public: Take Back Day', 'deatakeback.com', include_public_service, False],
-                    ['Public: Coronavirus', 'coronavirus.gov', include_public_service, False],
+    netloc_groups = [['ABC News', 'abcnews.go.com', include_national, False, 'abcnews'],
+                    ['ABC News', 'abcn.ws', include_national, False, 'abcnews'],
+                    ['American Renaissance', 'amren.com', include_national, True, 'americanrenaissance'],
+                    ['AP News', 'apnews.com', include_national, False, 'apnews'],
+                    ['Axios', 'axios.com', include_national, False, 'axios'],
+                    ['BBC', 'bbc.com', include_national, False, 'bbc'],
+                    ['Bloomberg', 'bloomberg.com', include_national, False, 'bloomberg'],
+                    ['Business Insider', 'businessinsider.com', include_national, False, 'businessinsider'],
+                    ['Breitbart', 'breitbart.com', include_national, True, 'breitbart'],
+                    ['Buzzfeed News', 'buzzfeednews.com', include_national, False, 'buzzfeed'],
+                    ['CBS News', 'cbsnews.com', include_national, False, 'cbsnews'],
+                    ['CBS News', 'cbsn.ws', include_national, False, 'cbsnews'],
+                    ['CBS News', 'cbsloc.al', include_national, False, 'cbsnews'],
+                    ['CNBC', 'cnbc.com', include_national, False, 'cnbc'],
+                    ['CNBC', 'cnb.cx', include_national, False, 'cnbc'],
+                    ['CNN', 'cnn.com', include_national, False, 'cnn'],
+                    ['CNN', 'edition.cnn.com', include_national, False, 'cnn'],
+                    ['CNN', 'cnn.it', include_national, False, 'cnn'],
+                    ['CNS News', 'cnsnews.com', include_national, False, 'cnsnews'], # conservative news site
+                    ['Daily Caller', 'dailycaller.com', include_national, True, 'dailycaller'],
+                    ['Daily Caller', 'amp.dailycaller.com', include_national, True, 'dailycaller'],
+                    ['Daily Signal', 'dailysignal.com', include_national, False, 'dailysignal'],
+                    ['Daily Stormer', 'dailystormer.com', include_national, True, 'dailystormer'],
+                    ['Daily Stormer', 'dailystormer.name', include_national, True, 'dailystormer'],
+                    ['Daily Stormer', 'dailystormer.su', include_national, True, 'dailystormer'],
+                    ['Forbes', 'forbes.com', include_national, False, 'forbes'],
+                    ['Fox News', 'fxn.ws', include_national, True, 'foxnews'],
+                    ['Fox News', 'foxbusiness.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'foxnews.com', include_national, True,'foxnews'],
+                    ['Fox News', '925foxnews.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'insider.foxnews.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'latino.foxnews.com', include_national, True,'foxnews'],
+                    ['Fox News', 'nation.foxnews.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'radio.foxnews.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'video.foxbusiness.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'video.foxnews.com', include_national, True, 'foxnews'],
+                    ['Fox News', 'press.foxnews.com', include_national, True, 'foxnews'],
+                    ['Huffington Post', 'huffpost.com', include_national, False, 'huffingtonpost'],
+                    ['Infowars', 'infowars.com', include_national, True, 'infowars'],
+                    ['Infowars', 'archives.infowars.com', include_national, True, 'infowars'],
+                    ['Just the News', 'justthenews.com', include_national, False], # https://capitolcommunicator.com/award-winning-journalist-john-solomon-launches-new-media-outlet/
+                    ['Los Angeles Times', 'latimes.com', include_national, False, 'latimes'],
+                    ['MarketWatch', 'marketwatch.com', include_national, False, 'marketwatch'],
+                    ['MSNBC', 'msnbc.com', include_national, False, 'msnbc'],
+                    ['National Review', 'nationalreview.com', include_national, False, 'nationalreview'],
+                    ['NBC News', 'nbcnews.com', include_national, False, 'nbcnews'],
+                    ['NBC News', 'nbcnews.to', include_national, False, 'nbcnews'],
+                    ['Newsmax', 'newsmax.com', include_national, True, 'newsmax'],
+                    ['Newsmax', 'newsmaxtv.com', include_national, True, 'newsmax'],
+                    ['Newsweek', 'newsweek.com', include_national, False, 'newsweek'],
+                    ['New York Post', 'nypost.com', include_national, False, 'newyorkpost'],
+                    ['New York Times', 'nytimes.com', include_national, False, 'newyorktimes'],
+                    ['New York Times', 'nyti.ms', include_national, False, 'newyorktimes'],
+                    ['NPR', 'npr.org', include_national, False, 'npr'], # national public radio
+                    ['NPR', 'n.pr', include_national, False, 'npr'],
+                    ['One America News', 'oann.com', include_national, True, 'oneamericanews'],
+                    ['PBS', 'pbs.org', include_national, False, 'pbs'],
+                    ['Politico', 'politico.com', include_national, False, 'politico'],
+                    ['Politico', 'politi.co', include_national, False, 'politico'],
+                    ['Real Clear Politics', 'realclearpolitics.com', include_national, False, 'realclearpolitics'],
+                    ['Reuters', 'reuters.com', include_national, False, 'reuters'],
+                    ['Reuters', 'reut.rs', include_national, False, 'reuters'],
+                    ['Ripon Advance', 'riponadvance.com', include_national, False, 'riponadvance'], # https://riponadvance.com/about-us/
+                    ['Roll Call', 'rollcall.com', include_national, False, 'rollcall'], # congressional news, legislative tracking and advocacy services
+                    ['Rush Limbaugh', 'rushlimbaugh.com', include_national, True, 'rushlimbaugh'],
+                    ['Sara Carter', 'saraacarter.com', include_national, False, 'saracarter'], # Fox News investigative reporter
+                    ['Sean Hannity', 'hannity.com', include_national, True, 'seanhannity'],
+                    ['Sean Hannity', 'hann.it', include_national, True, 'seanhannity'],
+                    ['The Blaze', 'theblaze.com', include_national, False, 'theblaze'], # conservative media, founded by Glenn Beck
+                    ['The Business Journals', 'bizjournals.com', include_national, False, 'thebusinessjournals'], # metropolitan business newsweeklies
+                    ['The Gateway Pundit', 'thegatewaypundit.com', include_national, True, 'gatewaypundit'],
+                    ['The Guardian', 'theguardian.com', include_national, False, 'guardian'],
+                    ['The Epoch Times', 'theepochtimes.com', include_national, False, 'epochtimes'],
+                    ['The Federalist', 'thefederalist.com', include_national, False, 'federalist'],
+                    ['The Hill', 'thehill.com', include_national, False, 'thehill'],
+                    ['The Hill', 'hill.cm', include_national, False, 'thehill'],
+                    ['Time', 'time.com', include_national, False, 'time'],
+                    ['Townhall', 'townhall.com', include_national, False, 'townhall'], # conservative news and political commentary and analysis
+                    ['Univision', 'univision.com', include_national, False, 'univision'],
+                    ['USA Today', 'eu.usatoday.com', include_national, False, 'usatoday'],
+                    ['USA Today', 'usatoday.com', include_national, False, 'usatoday'],
+                    ['VDARE', 'vdare.com', include_national, True, 'vdare'],
+                    ['Vox', 'vox.com', include_national, False, 'vox'],
+                    ['VICE', 'vice.com', include_national, False, 'vice'],
+                    ['Wall Street Journal', 'on.wsj.com', include_national, False, 'wallstreetjournal'],
+                    ['Wall Street Journal', 'wsj.com', include_national, False, 'wallstreetjournal'],
+                    ['Washington Free Beacon', 'freebeacon.com', include_national, False, 'washingtonfreebeacon'], # American conservative political journalism website launched in 2012
+                    ['Washington Examiner', 'washingtonexaminer.com', include_national, True, 'washingtonexaminer'],
+                    ['Washington Examiner', 'washex.am', include_national, True, 'washingtonexaminer'],
+                    ['Washington Post', 'washingtonpost.com', include_national, False, 'washingtonpost'],
+                    ['Washington Post', 'wapo.st', include_national, False, 'washingtonpost'],
+                    ['Washington Times', 'washingtontimes.com', include_national, False, 'washingtontimes'],
+                    ['Yahoo Finance', 'finance.yahoo.com', include_national, False, 'yahoofinance'],
                 
                     # regional
-                    ['Regional', 'theadvocate.com', include_regional, False], # Louisiana
-                    ['Regional', 'abc13.com', include_regional, False], # Houston
-                    ['Regional', 'ajc.com', include_regional, False], # Atlanta
-                    ['Regional', 'al.com', include_regional, False], # Alabama
-                    ['Regional', 'aldailynews.com', include_regional, False], # Alabama
-                    ['Regional', 'alreporter.com', include_regional, False], # Alabama
-                    ['Regional', 'altoday.com', include_regional, False], # Alabama
-                    ['Regional', 'argusleader.com', include_regional, False], # Sioux Falls, South Dakota
-                    ['Regional', 'arkansasonline.com', include_regional, False],
-                    ['Regional', 'auburnpub.com', include_regional, False], # Auburn, New York
-                    ['Regional', 'azcentral.com', include_regional, False], # Arizona
-                    ['Regional', 'eu.azcentral.com', include_regional, False], # Arizona
-                    ['Regional', 'bladenonline.com', include_regional, False], # Bladen County, North Carolina
-                    ['Regional', 'cincinnati.com', include_regional, False],
-                    ['Regional', 'chron.com', include_regional, False], # Houston Chronicle
-                    ['Regional', 'clarionledger.com', include_regional, False], # Mississippi
-                    ['Regional', 'cleveland.com', include_regional, False],
-                    ['Regional', 'dallasnews.com', include_regional, False],
-                    ['Regional', 'denverpost.com', include_regional, False],
-                    ['Regional', 'deseretnews.com', include_regional, False], # Utah
-                    ['Regional', 'deseret.com', include_regional, False],
-                    ['Regional', 'detroitnews.com', include_regional, False],
-                    ['Regional', 'expressnews.com', include_regional, False],
-                    ['Regional', 'floridadaily.com', include_regional, False],
-                    ['Regional', 'fox11online.com', include_regional, False], # Green Bay, Wisconsin
-                    ['Regional', 'gazette.com', include_regional, False], # Colorado
-                    ['Regional', 'graydc.com', include_regional, False], # 'hyperlocal' news in DC
-                    ['Regional', 'greenbaypressgazette.com', include_regional, False],
-                    ['Regional', 'houstonchronicle.com', include_regional, False],
-                    ['Regional', 'indystar.com', include_regional, False],
-                    ['Regional', 'joplinglobe.com', include_regional, False], # Missouri
-                    ['Regional', 'jsonline.com', include_regional, False], # Milwaukee, Wisconsin
-                    ['Regional', 'journalgazette.net', include_regional, False], # Fort Wayne, northeast Indiana
-                    ['Regional', 'kansas.com', include_regional, False],
-                    ['Regional', 'kansascity.com', include_regional, False],
-                    ['Regional', 'keloland.com', include_regional, False], # Sioux Falls, South Dakota
-                    ['Regional', 'kentucky.com', include_regional, False],
-                    ['Regional', 'kfyo.com', include_regional, False], # West Texas
-                    ['Regional', 'ksl.com', include_regional, False],
-                    ['Regional', 'ktar.com', include_regional, False], # Arizona
-                    ['Regional', 'ktvb.com', include_regional, False], # Boise, Idaho
-                    ['Regional', 'lancasteronline.com', include_regional, False], # Lancaster, PA
-                    ['Regional', 'courier-journal.com', include_regional, False], # Louisville, Kentucky
-                    ['Regional', 'miamiherald.com', include_regional, False], # Florida
-                    ['Regional', 'mlive.com', include_regional, False], # Michigan
-                    ['Regional', 'montgomeryadvertiser.com', include_regional, False], # Montgomery, Alabama
-                    ['Regional', 'nebraska.tv', include_regional, False], 
-                    ['Regional', 'newspressnow.com', include_regional, False], # St. Joseph, Missouri
-                    ['Regional', 'news-leader.com', include_regional, False],
-                    ['Regional', 'nny360.com', include_regional, False], # Northern New York
-                    ['Regional', 'nola.com', include_regional, False], # New Orleans
-                    ['Regional', 'nj.com', include_regional, False],
-                    ['Regional', 'omaha.com', include_regional, False],
-                    ['Regional', 'patch.com', include_regional, False], # hyper-local news platform
-                    ['Regional', 'postandcourier.com', include_regional, False], # Charleston, South Carolina
-                    ['Regional', 'postregister.com', include_regional, False], # Eastern Idaho
-                    ['Regional', 'poststar.com', include_regional, False], # New York
-                    ['Regional', 'reviewjournal.com', include_regional, False], # Las Vegas, Nevada
-                    ['Regional', 'richmond.com', include_regional, False], # Richmond, Virginia
-                    ['Regional', 'sltrib.com', include_regional, False], # Salt Lake City, Utah
-                    ['Regional', 'star-telegram.com', include_regional, False], # Fort Worth Texas
-                    ['Regional', 'statesman.com', include_regional, False], # Austin, Texas
-                    ['Regional', 'spokesman.com', include_regional, False], # Spokane, Washington
-                    ['Regional', 'stltoday.com', include_regional, False], # St. Louis, Missouri
-                    ['Regional', 'syracuse.com', include_regional, False], # Syracuse, New York
-                    ['Regional', 'tapinto.net',  include_regional, False], # TAPInto
-                    ['Regional', 'tcpalm.com', include_regional, False], # southeastern Florida, Treasure Coast Newspapers
-                    ['Regional', 'tennessean.com', include_regional, False], # Tennessee
-                    ['Regional', 'thenewsstar.com', include_regional, False], # Monroe, Louisiana
-                    ['Regional', 'tri-cityherald.com', include_regional, False], # Tri-City, Washington
-                    ['Regional', 'tucson.com', include_regional, False], # Tucson, Arizona
-                    ['Regional', 'wafb.com', include_regional, False], # Baton Rouge, Louisiana
-                    ['Regional', 'wbrz.com', include_regional, False], # Baton Rouge, Louisiana
-                    ['Regional', 'wdam.com', include_regional, False], # Mississippi
-                    ['Regional', 'woodtv.com', include_regional, False], # Michigan
-                    ['Regional', 'wowo.com', include_regional, False], # Indiana
-                    ['Regional', 'wvmetronews.com', include_regional, False], # West Virginia
-                    ['Regional', 'wwnytv.com', include_regional, False], # Watertown, New York
-                    ['Regional', 'yallpolitics.com', include_regional, False], # political news and commentary media outlet in the state of Mississippi.
-                    ['Regional', 'yellowhammernews.com', include_regional, False], # Alabama
-                
-                    # aggregators, URL shorteners, social media engagement tools
-                    ['Unknown', 'amp.twimg.com', include_unknown, False], # Twitter hosted image
-                    ['Unknown', 'podcasts.apple.com', include_unknown, False],
-                    ['Unknown', 'apple.news', include_unknown, False],
-                    ['Unknown', 'apple.co', include_unknown, False],
-                    ['Unknown', 'apne.ws', include_unknown, False],
-                    ['Unknown', 'bit.ly', include_unknown, False],
-                    ['Unknown', 'buff.ly', include_unknown, False],
-                    ['Unknown', 'dlvr.it', include_unknown, False],
-                    ['Unknown', 'fb.me', include_unknown, False],
-                    ['Unknown', 'goo.gl', include_unknown, False],
-                    ['Unknown', 'google.com', include_unknown, False],
-                    ['Unknown', 'iheart.com', include_unknown, False],
-                    ['Unknown', 'iqconnect.lmhostediq.com', include_unknown, False], # newsletter service
-                    ['Unknown', 'j.mp', include_unknown, False],
-                    ['Unknown', 'medium.com', include_unknown, False], # not a news media source
-                    ['Unknown', 'omny.fm', include_unknown, False], # podcasting
-                    ['Unknown', 'ow.ly', include_unknown, False],
-                    ['Unknown', 'snpy.tv', include_unknown, False], # SnappyTV, Twitter's real-time video-clipping service
-                    ['Unknown', 'spectrumnews1.com', include_unknown, False], # generic
-                    ['Unknown', 'tinyurl.com', include_unknown, False],
-                    ['Unknown', 'trib.al', include_unknown, False],
-                    ['Unknown', 'usat.ly', include_unknown, False], # custom domain from bitly
-                    ['Unknown', 'vimeo.com', include_unknown, False],
-                    
+                    ['Regional', 'theadvocate.com', include_regional, False, ''], # Louisiana
+                    ['Regional', 'abc13.com', include_regional, False, ''], # Houston
+                    ['Regional', 'ajc.com', include_regional, False, ''], # Atlanta
+                    ['Regional', 'al.com', include_regional, False, ''], # Alabama
+                    ['Regional', 'aldailynews.com', include_regional, False, ''], # Alabama
+                    ['Regional', 'alreporter.com', include_regional, False, ''], # Alabama
+                    ['Regional', 'altoday.com', include_regional, False, ''], # Alabama
+                    ['Regional', 'argusleader.com', include_regional, False, ''], # Sioux Falls, South Dakota
+                    ['Regional', 'arkansasonline.com', include_regional, False, ''],
+                    ['Regional', 'auburnpub.com', include_regional, False, ''], # Auburn, New York
+                    ['Regional', 'azcentral.com', include_regional, False, ''], # Arizona
+                    ['Regional', 'eu.azcentral.com', include_regional, False, ''], # Arizona
+                    ['Regional', 'bladenonline.com', include_regional, False, ''], # Bladen County, North Carolina
+                    ['Regional', 'cincinnati.com', include_regional, False, ''],
+                    ['Regional', 'chron.com', include_regional, False, ''], # Houston Chronicle
+                    ['Regional', 'clarionledger.com', include_regional, False, ''], # Mississippi
+                    ['Regional', 'cleveland.com', include_regional, False, ''],
+                    ['Regional', 'dallasnews.com', include_regional, False, ''],
+                    ['Regional', 'denverpost.com', include_regional, False, ''],
+                    ['Regional', 'deseretnews.com', include_regional, False, ''], # Utah
+                    ['Regional', 'deseret.com', include_regional, False, ''],
+                    ['Regional', 'detroitnews.com', include_regional, False, ''],
+                    ['Regional', 'expressnews.com', include_regional, False, ''],
+                    ['Regional', 'floridadaily.com', include_regional, False, ''],
+                    ['Regional', 'fox11online.com', include_regional, False, ''], # Green Bay, Wisconsin
+                    ['Regional', 'gazette.com', include_regional, False, ''], # Colorado
+                    ['Regional', 'graydc.com', include_regional, False, ''], # 'hyperlocal' news in DC
+                    ['Regional', 'greenbaypressgazette.com', include_regional, False, ''],
+                    ['Regional', 'houstonchronicle.com', include_regional, False, ''],
+                    ['Regional', 'indystar.com', include_regional, False, ''],
+                    ['Regional', 'joplinglobe.com', include_regional, False, ''], # Missouri
+                    ['Regional', 'jsonline.com', include_regional, False, ''], # Milwaukee, Wisconsin
+                    ['Regional', 'journalgazette.net', include_regional, False, ''], # Fort Wayne, northeast Indiana
+                    ['Regional', 'kansas.com', include_regional, False, ''],
+                    ['Regional', 'kansascity.com', include_regional, False, ''],
+                    ['Regional', 'keloland.com', include_regional, False, ''], # Sioux Falls, South Dakota
+                    ['Regional', 'kentucky.com', include_regional, False, ''],
+                    ['Regional', 'kfyo.com', include_regional, False, ''], # West Texas
+                    ['Regional', 'ksl.com', include_regional, False, ''],
+                    ['Regional', 'ktar.com', include_regional, False, ''], # Arizona
+                    ['Regional', 'ktvb.com', include_regional, False, ''], # Boise, Idaho
+                    ['Regional', 'lancasteronline.com', include_regional, False, ''], # Lancaster, PA
+                    ['Regional', 'courier-journal.com', include_regional, False, ''], # Louisville, Kentucky
+                    ['Regional', 'miamiherald.com', include_regional, False, ''], # Florida
+                    ['Regional', 'mlive.com', include_regional, False, ''], # Michigan
+                    ['Regional', 'montgomeryadvertiser.com', include_regional, False, ''], # Montgomery, Alabama
+                    ['Regional', 'nebraska.tv', include_regional, False, ''], 
+                    ['Regional', 'newspressnow.com', include_regional, False, ''], # St. Joseph, Missouri
+                    ['Regional', 'news-leader.com', include_regional, False, ''],
+                    ['Regional', 'nny360.com', include_regional, False, ''], # Northern New York
+                    ['Regional', 'nola.com', include_regional, False, ''], # New Orleans
+                    ['Regional', 'nj.com', include_regional, False, ''],
+                    ['Regional', 'omaha.com', include_regional, False, ''],
+                    ['Regional', 'patch.com', include_regional, False, ''], # hyper-local news platform
+                    ['Regional', 'postandcourier.com', include_regional, False, ''], # Charleston, South Carolina
+                    ['Regional', 'postregister.com', include_regional, False, ''], # Eastern Idaho
+                    ['Regional', 'poststar.com', include_regional, False, ''], # New York
+                    ['Regional', 'reviewjournal.com', include_regional, False, ''], # Las Vegas, Nevada
+                    ['Regional', 'richmond.com', include_regional, False, ''], # Richmond, Virginia
+                    ['Regional', 'sltrib.com', include_regional, False, ''], # Salt Lake City, Utah
+                    ['Regional', 'star-telegram.com', include_regional, False, ''], # Fort Worth Texas
+                    ['Regional', 'statesman.com', include_regional, False, ''], # Austin, Texas
+                    ['Regional', 'spokesman.com', include_regional, False, ''], # Spokane, Washington
+                    ['Regional', 'stltoday.com', include_regional, False, ''], # St. Louis, Missouri
+                    ['Regional', 'syracuse.com', include_regional, False, ''], # Syracuse, New York
+                    ['Regional', 'tapinto.net',  include_regional, False, ''], # TAPInto
+                    ['Regional', 'tcpalm.com', include_regional, False, ''], # southeastern Florida, Treasure Coast Newspapers
+                    ['Regional', 'tennessean.com', include_regional, False, ''], # Tennessee
+                    ['Regional', 'thenewsstar.com', include_regional, False, ''], # Monroe, Louisiana
+                    ['Regional', 'tri-cityherald.com', include_regional, False, ''], # Tri-City, Washington
+                    ['Regional', 'tucson.com', include_regional, False, ''], # Tucson, Arizona
+                    ['Regional', 'wafb.com', include_regional, False, ''], # Baton Rouge, Louisiana
+                    ['Regional', 'wbrz.com', include_regional, False, ''], # Baton Rouge, Louisiana
+                    ['Regional', 'wdam.com', include_regional, False, ''], # Mississippi
+                    ['Regional', 'woodtv.com', include_regional, False, ''], # Michigan
+                    ['Regional', 'wowo.com', include_regional, False, ''], # Indiana
+                    ['Regional', 'wvmetronews.com', include_regional, False, ''], # West Virginia
+                    ['Regional', 'wwnytv.com', include_regional, False, ''], # Watertown, New York
+                    ['Regional', 'yallpolitics.com', include_regional, False, ''], # political news and commentary media outlet in the state of Mississippi.
+                    ['Regional', 'yellowhammernews.com', include_regional, False, ''], # Alabama
+                                
                     # GOP
-                    ['.gop', 'didyouknow.gop', include_gop, False],
-                    ['.gop', 'fairandsimple.gop', include_gop, False],
-                    
-                    # miscellaneous
-                    ['Misc', 'espn.com', include_misc, False],
-                    ['Misc', 'safetravelusa.com', include_misc, False], # road conditions
-                    ['Misc', 'access.live', include_misc, False], # conferencing tool
-                    ['Misc', 'vekeo.com', include_misc, False], # conferencing tool
-                    ['Misc', 'eventbrite.com', include_misc, False],
-                    ['Misc', 'moaa.org', include_misc, False]
+                    ['.gop', 'didyouknow.gop', include_gop, False, ''],
+                    ['.gop', 'fairandsimple.gop', include_gop, False, ''],
+
+
+                    # government
+                    ['Military', 'army.mil', include_government, False, ''],
+                    ['Military', 'defensenews.com', include_government, False, ''],
+                    ['Military', 'military.com', include_government, False, ''],
+                    ['Military', 'militarytimes.com', include_government, False, ''],
+                    ['Military', 'navy.mil', include_government, False, ''],
+                    ['Military', 'stripes.com', include_government, False, ''],
+                    ['C-SPAN', 'c-span.org', include_government, False, ''], # Cable-Satellite Public Affairs Network
+                    ['C-SPAN', 'cs.pn', include_government, False, ''],
+                    ['GovTrack.us', 'govtrack.us', include_government, False, ''],
+                    ['2020 Census', 'my2020census.gov', include_government, False, ''],
+                    ['2020 Census', '2020census.gov', include_government, False, ''],
+                    ['CDC', 'cdc.gov', include_government, False, ''], # Center for Disease Control
+                    ['Disaster Response', 'disasterassistance.gov', include_government, False, ''],
+                    ['Disaster Response', 'hurricanes.gov', include_government, False, ''],
+                    ['Disaster Response', 'nvoad.org', include_government, False, ''],
+                    ['Disaster Response', 'redcross.org', include_government, False, ''],
+                    ['Disaster Response', 'rdcrss.org', include_government, False, ''],
+                    ['Small Business Administration', 'sba.gov', include_government, False, ''],
+                    ['Take Back Day', 'takebackday.dea.gov', include_government, False, ''],
+                    ['Take Back Day', 'deatakeback.com', include_government, False, ''],
+                    ['Coronavirus', 'coronavirus.gov', include_government, False, '']
                     ]
         
-    df_media_netloc = pd.DataFrame(netloc_groups, columns =['netloc_group', 'url_netloc', 'include_netloc', 'is_selected_outlet'])
+    df_media_netloc = pd.DataFrame(netloc_groups, columns =['netloc_group', 'url_netloc', 'include_netloc', 'is_selected_outlet', 'outlet_std'])
 
     return df_media_netloc
 
 def get_media_outlet_ideo():
     # Pew numbers are from Jurkowitz et al.: U.S. Media Polarization and the 2020 Election: A Nation Divided
+    # https://www.pewresearch.org/journalism/wp-content/uploads/sites/8/2020/01/PJ_2020.01.24_Media-Polarization_FINAL.pdf
     outlet_ideo = [['Vox','vox',62, 4, 58,'left','left',0],
-                    ['HuffPost','huffingtonpost', 53,11,42,'left','left',1],
+                    ['Huffington Post','huffingtonpost', 53,11,42,'left','left',1],
                     ['The Guardian','guardian', 54,12,42,'left','left',2],
-                    ['Vice','vice',48,7,41,'left','left',3],
+                    ['VICE','vice',48,7,41,'left','left',3],
                     ['New York Times','newyorktimes', 48,11,37,'left','left',4],
                     ['NPR', 'npr',49,12,37,'left','left',5],
                     ['Politico','politico', 49,13,36,'left','left',6],
@@ -301,7 +266,7 @@ def get_media_outlet_ideo():
                     ['CBS News','cbsnews',23,22,1,'mixed','mixed',22],
                     ['New York Post','newyorkpost',22,32,-10,'mixed','mixed',23],
                     ['Washington Examiner','washingtonexaminer',14,44,-29,'right','established right',24],
-                    ['Fox','foxnews',9,46,-38,'right','established right',25],
+                    ['Fox News','foxnews',9,46,-38,'right','established right',25],
                     ['Daily Caller','dailycaller',3,72,-69,'right','established right',26],
                     ['Breitbart','breitbart',1,80,-79,'right','alternative right',27],
                     ['Sean Hannity','seanhannity',2,82,-80,'right','established right',28],
