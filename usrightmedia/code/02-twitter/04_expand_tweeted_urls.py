@@ -45,6 +45,7 @@ resolved_urls = urlexpander.expand(
 )
 LOGGER.info(f"finished url expansion at {datetime.datetime.now()}")
 
+# Join URLs from urlExpander to URLs from Twitter
 urls["resolved_url"] = resolved_urls
 
 urls = urls[
