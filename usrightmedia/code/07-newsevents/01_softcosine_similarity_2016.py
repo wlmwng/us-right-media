@@ -14,7 +14,10 @@ import logging
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 from usrightmedia.shared.loggers import get_logger
 
-LOGGER = get_logger(filename="01-softcosine-similarity", logger_type="main")
+FROM_YEAR = "2016"
+TO_YEAR = "2017"
+
+LOGGER = get_logger(filename=f"01-softcosine-similarity-{FROM_YEAR}", logger_type="main")
 LOGGER.info(f"gensim version: {gensim.__version__}")
 
 myinca = Inca()
@@ -36,7 +39,7 @@ outlet_doctypes = [
 ]
 
 START_TIME = datetime.now()
-LOGGER.info(f"Starting softcosine similarity calculation at {START_TIME}")
+LOGGER.info(f"Starting softcosine similarity calculation for {FROM_YEAR} at {START_TIME}")
 
 myinca.analysis.softcosine_similarity.fit(
     path_to_model=os.path.join(
@@ -63,11 +66,11 @@ myinca.analysis.softcosine_similarity.fit(
     days_after=2,
     merge_weekend=False,  # do not assume weekend can be collapsed
     threshold=0.2,
-    from_time="2016-01-01",  # gte
-    to_time="2021-01-01",  # lte
+    from_time=f"{FROM_YEAR}-01-01",  # gte
+    to_time=f"{TO_YEAR}-01-01",  # lte
     to_csv=False,  # return a pickled pandas dataframe instead of a CSV file
     destination=os.path.join(
-        "..", "..", "data", "02-intermediate", "07-newsevents", "01-softcosine-output"
+        "..", "..", "data", "02-intermediate", "07-newsevents", "01-softcosine-output", FROM_YEAR
     ),
     to_pajek=False,  # not available in combination with days_before/days_after parameters
     filter_above=0.5,  # default
@@ -75,4 +78,4 @@ myinca.analysis.softcosine_similarity.fit(
 )  # default
 
 END_TIME = datetime.now()
-LOGGER.info(f"Finished softcosine similarity calculation at {END_TIME}")
+LOGGER.info(f"Finished softcosine similarity calculation for {FROM_YEAR} at {END_TIME}")
