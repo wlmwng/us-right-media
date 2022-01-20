@@ -34,11 +34,23 @@ loggers:
     handlers: [console]
     propagate: no
   usrightmedia: # Automatically collect usrightmedia logs.
-    level: INFO
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+  gensim: # Automatically collect gensim logs.
+    level: DEBUG
     handlers: [console, file]
     propagate: no
   INCA: # Automatically collect INCA logs.
-    level: INFO
+    level: DEBUG
+    handlers: [console, file]
+    propagate: no
+  elasticsearch: # Automatically collect elasticsearch logs.
+    level: WARNING
+    handlers: [console, file]
+    propagate: no
+  elasticsearch.trace: # Automatically collect elasticsearch.trace logs.
+    level: WARNING
     handlers: [console, file]
     propagate: no
   twarc: # Automatically collect twarc logs.
