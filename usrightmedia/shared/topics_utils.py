@@ -14,14 +14,14 @@ import logging
 
 LOGGER = logging.getLogger("topics_utils")
 
+# python -m spacy download en_core_web_lg
 nlp = spacy.load("en_core_web_lg")
 
-
 INPUTS_DIR = os.path.join(
-    "..", "..", "data", "02-intermediate", "07-topic-models", "01-inputs"
+    "..", "..", "data", "02-intermediate", "08-topic-models", "01-inputs"
 )
 MODELS_DIR = os.path.join(
-    "..", "..", "data", "02-intermediate", "07-topic-models", "02-models"
+    "..", "..", "data", "02-intermediate", "08-topic-models", "02-models"
 )
 
 # =============================================================================================================
@@ -174,7 +174,7 @@ def load_inputs(corpus_type, docs_type, INPUTS_DIR):
     inputs["corpus"] = MmCorpus(
         os.path.join(INPUTS_DIR, "corpora", f"corpus_{corpus_type}_{docs_type}.mm")
     )
-    with open(os.path.join(INPUTS_DIR, f"docs_{docs_type}.pkl"), "rb") as handle:
+    with open(os.path.join(INPUTS_DIR, "docs", f"docs_{docs_type}.pkl"), "rb") as handle:
         inputs["docs"] = pickle.load(handle)
     inputs["corpus_type"] = corpus_type
     inputs["docs_type"] = docs_type
