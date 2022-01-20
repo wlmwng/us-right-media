@@ -130,20 +130,20 @@ def get_field_value_for_ids(doc_ids, field="tweets2_url_ids"):
         field (str): document field to retrieve from ES
 
     Returns:
-        df_tw (dataframe): row index values are the doc_ids
+        df (dataframe): row index values are the doc_ids
                            one column named according to field
 
     """
 
     # initialize dataframe to populate
-    df_tw = pd.DataFrame(index=doc_ids)
-    df_tw[field] = [[] for _ in range(len(df_tw))]
+    df = pd.DataFrame(index=doc_ids)
+    df[field] = [[] for _ in range(len(df))]
 
     # use scroll query because ES returns at most 10,000 docs per window
     for doc in myinca.database.scroll_query(query_by_ids(doc_ids)):
-        df_tw.at[doc["_id"], field] = doc["_source"][field]
+        df.at[doc["_id"], field] = doc["_source"][field]
 
-    return df_tw
+    return df
 
 
 # =============================================================================================================
