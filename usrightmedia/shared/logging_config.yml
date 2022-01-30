@@ -17,8 +17,8 @@ handlers:
     formatter: extended
     filename: default.log
     mode: 'a'
-    maxBytes: 1000000 # 1MB
-    backupCount: 20
+    maxBytes: 50000000 # 50MB
+    backupCount: 100
     encoding: utf8
 loggers:
   main:
