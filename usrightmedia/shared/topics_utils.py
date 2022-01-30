@@ -93,6 +93,9 @@ https://explosion.ai/demos/displacy-ent https://github.com/explosion/spaCy/blob/
 
 
 def preprocess_docs(docs, label, INPUTS_DIR):
+    """
+    citation: based off of https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/atmodel_tutorial.ipynb
+    """
     processed_docs = []
     for doc in nlp.pipe(docs):
         # Process document using Spacy NLP pipeline
@@ -107,8 +110,10 @@ def preprocess_docs(docs, label, INPUTS_DIR):
             and token.ent_type_ not in ["PERSON", "DATE", "TIME", "PERCENT", "QUANTITY"]
             and token.text not in ["trump", "Trump"]
         ]
-
-        processed_docs.append(doc)
+        
+        # pre-processing can result in some docs having no tokens (i.e., length is 0)
+        if len(doc) > 0:
+            processed_docs.append(doc)
 
     docs = processed_docs
     del processed_docs
