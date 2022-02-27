@@ -1050,10 +1050,10 @@ def add_ideo_hierarchical_axes(doctype_dyadic_comparison, flatten_axes=[]):
 # dyad-level: plotting functions
 
 
-def plot_yearly_dyadic_comparison(
+def _plot_yearly_dyadic_comparison_percent(
     dyads, title="", display_pair="doctype_ideo_to_doctype_ideo"
 ):
-    """Chart for dyadic comparison.
+    """Percentage plot for dyadic comparison.
 
     Args:
         dyads (list of 2-item tuples): each item is a dict representing a document
@@ -1175,12 +1175,112 @@ def plot_yearly_dyadic_comparison(
     return plot
 
 
+def _plot_yearly_dyadic_comparison_count(
+    dyads, title="", display_pair="doctype_ideo_to_doctype_ideo"
+):
+    """Count plot for dyadic comparison.
+
+    Args:
+        dyads (list of 2-item tuples): each item is a dict representing a document
+        title (string)
+        display_pair (string): "doctype_ideo_to_doctype_ideo" or "doctype_to_doctype"
+
+    Returns:
+        plot (plotnine chart)
+
+    """
+
+    # prep data
+    df_tidy_pairs = get_df_tidy_pairs(dyads)
+
+    df_yearly_totals = (
+        df_tidy_pairs.groupby(["publish_year"])
+        .size()
+        .to_frame()
+        .rename(columns={0: "total_year"})
+    )
+
+    p9_data = (
+        df_tidy_pairs.groupby(["publish_year", display_pair])
+        .size()
+        .to_frame()
+        .reset_index()
+        .rename(columns={0: "count_year"})
+    )
+
+    # prep plot colors
+    if display_pair == "doctype_to_doctype":
+        doctypes = p9_data["doctype_to_doctype"].unique()[0].split("_")
+        doctype0 = doctypes[0]
+        doctype1 = doctypes[1]
+
+        # color is assigned alphabetically
+        default_fill = {
+            f"{doctype0}_{doctype1}": "#fecc5c",
+            f"{doctype1}_{doctype0}": "#e31a1c",
+        }
+
+    elif display_pair == "doctype_ideo_to_doctype_ideo":
+        default_fill = {
+            "alt_alt": "#ffffb2",
+            "alt_est": "#fecc5c",
+            "est_alt": "#fd8d3c",
+            "est_est": "#e31a1c",
+        }
+
+    plot_fill = {
+        k: default_fill[k] for k in p9_data[display_pair].unique() if k in default_fill
+    }
+
+    # prep plot components
+    chart = p9.ggplot(
+        data=p9_data,
+        mapping=p9.aes(
+            x="publish_year", y="count_year", color=display_pair, fill=display_pair
+        ),
+    )
+
+    area = p9.geom_area(alpha=0.5, color=None, position="stack")
+    text = p9.geom_text(
+        mapping=p9.aes(label="count_year"),
+        position="stack",
+        color="black",
+        va="center",
+        size=9,
+        show_legend=False,
+    )
+
+    # combine plot components and modify scales
+    plot = (
+        chart
+        + area
+        + text
+        + p9.scale_x_datetime(
+            breaks=date_breaks("1 year"), date_labels="%Y", expand=(0.1, 0)
+        )
+        + p9.scale_fill_manual(values=list(plot_fill.values()))
+    )
+
+    # chart labels
+    plot = plot + p9.labs(
+        title=f"{title} ({df_yearly_totals['total_year'].sum()} dyads)",
+        color="",
+        alpha="",
+        fill="",
+        x="year",
+        y="count of dyads",
+    )
+
+    return plot
+
+
 def plot_filtered_yearly_dyadic_comparison(
     dyads,
     key0="doctype",
     key1="doctype",
     values0=DOCTYPES,
     values1=DOCTYPES,
+    plot_type="percent",
 ):
     """Returns 2 dyadic comparison plots, one in each direction.
        Dyads can be filtered by doctype or doctype_ideo.
@@ -1189,8 +1289,9 @@ def plot_filtered_yearly_dyadic_comparison(
         dyads (list of 2-item tuples): each item is a dict representing a document
         key0 (str): "doctype" or "doctype_ideo"
         key1 (str): "doctype" or "doctype_ideo"
-        values0 (list of strings)
-        values1 (list of strings)
+        values0 (list of str): doctype names
+        values1 (list of str) doctype names
+        plot_type (str): "percent", "count"
 
     Returns:
         plots (list of plotnine charts):
@@ -1226,28 +1327,45 @@ def plot_filtered_yearly_dyadic_comparison(
 
         doctype_dyads = dyads_0_to_1 + dyads_1_to_0
 
-        # shows doctype_to_doctype in both directions
-        plot = plot_yearly_dyadic_comparison(
-            doctype_dyads, title=title, display_pair="doctype_to_doctype"
-        )
+        if plot_type == "percent":
+            # shows doctype_to_doctype in both directions
+            plot = _plot_yearly_dyadic_comparison_percent(
+                doctype_dyads, title=title, display_pair="doctype_to_doctype"
+            )
+
+        elif plot_type == "count":
+            # shows doctype_to_doctype in both directions
+            plot = _plot_yearly_dyadic_comparison_count(
+                doctype_dyads, title=title, display_pair="doctype_to_doctype"
+            )
 
         plots = [plot]
 
     else:
 
-        # when values0 is/are leader(s), they
-        # lead alternative-right outlets __% of the time
-        # and established-right outlets __% of the time
-        plot_0_to_1 = plot_yearly_dyadic_comparison(
-            dyads_0_to_1, title=title, display_pair="doctype_ideo_to_doctype_ideo"
-        )
+        if plot_type == "percent":
+            # when values0 is/are leader(s), they
+            # lead alternative-right outlets __% of the time
+            # and established-right outlets __% of the time
+            plot_0_to_1 = _plot_yearly_dyadic_comparison_percent(
+                dyads_0_to_1, title=title, display_pair="doctype_ideo_to_doctype_ideo"
+            )
 
-        # when values0 is/are follower(s), they
-        # follow alternative-right outlets __% of the time
-        # and established-right outlets __% of the time
-        plot_1_to_0 = plot_yearly_dyadic_comparison(
-            dyads_1_to_0, title=title, display_pair="doctype_ideo_to_doctype_ideo"
-        )
+            # when values0 is/are follower(s), they
+            # follow alternative-right outlets __% of the time
+            # and established-right outlets __% of the time
+            plot_1_to_0 = _plot_yearly_dyadic_comparison_percent(
+                dyads_1_to_0, title=title, display_pair="doctype_ideo_to_doctype_ideo"
+            )
+
+        elif plot_type == "count":
+            plot_0_to_1 = _plot_yearly_dyadic_comparison_count(
+                dyads_0_to_1, title=title, display_pair="doctype_ideo_to_doctype_ideo"
+            )
+
+            plot_1_to_0 = _plot_yearly_dyadic_comparison_count(
+                dyads_1_to_0, title=title, display_pair="doctype_ideo_to_doctype_ideo"
+            )
 
         plots = [plot_0_to_1, plot_1_to_0]
 
