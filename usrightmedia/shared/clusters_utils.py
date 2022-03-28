@@ -561,6 +561,27 @@ def filter_dyads(
 
     return dyads_cx_filtered
 
+def dyads_cx_as_df(dyads_cx):
+    """Format dyadic
+    
+    Args:
+        dyads_cx (dictionary): key is cluster_id, value is list of dyads
+    
+    Returns:
+        df (dataframe): 3 columns - cluster_id, list of dyads, and number of dyads (length of list of dyads)
+    
+    """
+    clusters = [k for k in dyads_cx.keys()]
+    dyads = [v for v in dyads_cx.values()]
+    n_dyads = [len(v) for v in dyads_cx.values()]
+    
+    df = pd.DataFrame({'cluster_id': clusters,
+                       'dyads': dyads,
+                       'n_dyads': n_dyads
+                      })
+    return df
+
+
 
 # =============================================================================================================
 # DATA: PAIRS (e.g, doctype or doctype_ideo)
