@@ -13,6 +13,8 @@ from gensim.models.callbacks import PerplexityMetric, ConvergenceMetric, Coheren
 from gensim.corpora.mmcorpus import MmCorpus
 import spacy
 
+import plotnine as p9
+
 import logging
 from usrightmedia.shared.loggers import get_logger
 
@@ -96,8 +98,9 @@ https://explosion.ai/demos/displacy-ent https://github.com/explosion/spaCy/blob/
 """
 
 
-def preprocess_docs(docs, label, INPUTS_DIR):
-    """
+def preprocess_docs(docs, docs_type, INPUTS_DIR):
+    """Pre-process which removes empty documents.
+    
     citation: based off of https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/atmodel_tutorial.ipynb
     """
     processed_docs = []
@@ -130,14 +133,72 @@ def preprocess_docs(docs, label, INPUTS_DIR):
                 # Token is a bigram, add to document.
                 docs[idx].append(token)
 
-    with open(os.path.join(INPUTS_DIR, "docs", f"docs_{label}.pkl"), "wb") as handle:
+    with open(os.path.join(INPUTS_DIR, "docs", f"docs_{docs_type}.pkl"), "wb") as handle:
         pickle.dump(docs, handle)
 
     return docs
 
 
+def preprocess_docs_with_doc_ids(doc_ids, docs, docs_type, INPUTS_DIR):
+    """Pre-process which includes doc_id field.
+    *Patch-up: should have included the ID information in preprocess_docs();
+               this is a fix so topic assignments can be associated back to their doc_ids from INCA.      
+    
+    Args:
+        doc_ids (list of str)
+        docs (list of str)
+        docs_type (str): "titles", "leads", "texts"
+        INPUTS_DIR (constant)
+    
+    Returns:
+        df (dataframe): 'doc_id' and 'processed_doc' columns
+    
+    citation: based off of https://github.com/RaRe-Technologies/gensim/blob/develop/docs/notebooks/atmodel_tutorial.ipynb
+    """
+    processed_ids = []
+    processed_docs = []
+    for n, doc in enumerate(nlp.pipe(docs)):
+        # Process document using Spacy NLP pipeline
+
+        # Lemmatize tokens, remove punctuation, remove stopwords, remove certain entity types
+        doc = [
+            token.lemma_.lower()
+            for token in doc
+            if token.is_alpha
+            and not token.is_stop
+            and token.pos_ in ["NOUN", "ADJ", "ADV"]
+            and token.ent_type_ not in ["PERSON", "DATE", "TIME", "PERCENT", "QUANTITY"]
+            and token.text not in ["trump", "Trump"]
+        ]
+        
+        # pre-processing can result in some docs having no tokens (i.e., length is 0)
+        if len(doc) > 0:
+            processed_ids.append(doc_ids[n])
+            processed_docs.append(doc)
+
+    docs = processed_docs
+    del processed_docs
+
+    # Add bigrams to docs (only ones that appear 20 times or more).
+    bigram = Phrases(docs, min_count=20)
+    for idx in range(len(docs)):
+        for token in bigram[docs[idx]]:
+            if "_" in token:
+                # Token is a bigram, add to document.
+                docs[idx].append(token)
+                
+    df = pd.DataFrame()
+    df['doc_id'] = processed_ids
+    df['processed_doc'] = docs
+
+    with open(os.path.join(INPUTS_DIR, "docs", f"docs_{docs_type}_with_inca_ids.pkl"), "wb") as handle:
+        pickle.dump(df, handle)
+
+    return df
+
+
 # Create a dictionary representation of the documents, and filter out frequent and rare words.
-def save_dictionary(docs, label, INPUTS_DIR):
+def save_dictionary(docs, docs_type, INPUTS_DIR):
     dictionary = Dictionary(docs)
 
     # https://radimrehurek.com/gensim/corpora/dictionary.html#gensim.corpora.dictionary.Dictionary.filter_extremes
@@ -148,12 +209,12 @@ def save_dictionary(docs, label, INPUTS_DIR):
     dictionary.compactify()
 
     dictionary.save(
-        os.path.join(INPUTS_DIR, "dictionaries", f"dictionary_{label}.dict")
+        os.path.join(INPUTS_DIR, "dictionaries", f"dictionary_{docs_type}.dict")
     )
     return dictionary
 
 
-def save_corpus(dictionary, docs, label, INPUTS_DIR):
+def save_corpus(dictionary, docs, docs_type, INPUTS_DIR):
     # Vectorize data: bag-of-words representation of the documents.
     corpus = [dictionary.doc2bow(doc) for doc in docs]
 
@@ -162,10 +223,10 @@ def save_corpus(dictionary, docs, label, INPUTS_DIR):
     corpus_tfidf = [bow for bow in tc]
 
     MmCorpus.serialize(
-        os.path.join(INPUTS_DIR, "corpora", f"corpus_count_{label}.mm"), corpus
+        os.path.join(INPUTS_DIR, "corpora", f"corpus_count_{docs_type}.mm"), corpus
     )
     MmCorpus.serialize(
-        os.path.join(INPUTS_DIR, "corpora", f"corpus_tfidf_{label}.mm"), corpus_tfidf
+        os.path.join(INPUTS_DIR, "corpora", f"corpus_tfidf_{docs_type}.mm"), corpus_tfidf
     )
 
     return corpus, corpus_tfidf
@@ -397,13 +458,15 @@ def compute_coherence_values(corpus_type, docs_type, min_topics, max_topics, ste
                 
         
 # adapted from https://www.machinelearningplus.com/nlp/topic-modeling-gensim-python/
-def extract_top_topic_per_doc(model, corpus, docs):
+def extract_top_topic_per_doc(model, corpus_type, corpus, docs_type, docs):
     """For each document, extract the topic with the highest probability.
     
     Args:
         model (obj): gensim LDA model
+        corpus_type (str): "tfidf", "count"
         corpus (obj): gensim corpus
-        docs (list): list of texts
+        docs_type (str): "leads", "texts", "titles"
+        docs (list): list of strings
     
     Returns:
         df_topics (dataframe): dataframe where each row is a document.
@@ -429,10 +492,9 @@ def extract_top_topic_per_doc(model, corpus, docs):
     
     """
     
-    model_name = f"lda_corpus_{corpus}_docs_{docs}_topics_{model.num_topics}"
+    model_name = f"lda_corpus_{corpus_type}_docs_{docs_type}_topics_{model.num_topics}"
     
     LOGGER = get_logger(filename = f'{model_name}_top_topic', logger_type='main')
-    
     # Init output
     df_topics = pd.DataFrame()
 
