@@ -1243,11 +1243,18 @@ def _plot_yearly_dyadic_comparison_count(
 
     elif display_pair == "doctype_ideo_to_doctype_ideo":
         default_fill = {
-            "alt_alt": "#ffffb2",
-            "alt_est": "#fecc5c",
-            "est_alt": "#fd8d3c",
-            "est_est": "#e31a1c",
+            "alt_alt": "black",
+            "alt_est": "darkgrey",
+            "est_alt": "lightgrey",
+            "est_est": "white",
         }
+        
+        # default_fill = {
+        #     "alt_alt": "#ffffb2",
+        #     "alt_est": "#fecc5c",
+        #     "est_alt": "#fd8d3c",
+        #     "est_est": "#e31a1c",
+        # }
 
     plot_fill = {
         k: default_fill[k] for k in p9_data[display_pair].unique() if k in default_fill
@@ -1261,7 +1268,7 @@ def _plot_yearly_dyadic_comparison_count(
         ),
     )
 
-    area = p9.geom_area(alpha=0.5, color=None, position="stack")
+    area = p9.geom_area(alpha=0.5, color="black", position="stack")
     text = p9.geom_text(
         mapping=p9.aes(label="count_year"),
         position="stack",
@@ -1280,6 +1287,7 @@ def _plot_yearly_dyadic_comparison_count(
             breaks=date_breaks("1 year"), date_labels="%Y", expand=(0.1, 0)
         )
         + p9.scale_fill_manual(values=list(plot_fill.values()))
+        + p9.theme_bw()
     )
 
     # chart labels
