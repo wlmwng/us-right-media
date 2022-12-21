@@ -1124,16 +1124,16 @@ def _plot_yearly_dyadic_comparison_percent(
 
         # color is assigned alphabetically
         default_fill = {
-            f"{doctype0}_{doctype1}": "#fecc5c",
-            f"{doctype1}_{doctype0}": "#e31a1c",
+            f"{doctype0}_{doctype1}": "#969696",
+            f"{doctype1}_{doctype0}": "#f7f7f7",
         }
 
     elif display_pair == "doctype_ideo_to_doctype_ideo":
         default_fill = {
-            "alt_alt": "#ffffb2",
-            "alt_est": "#fecc5c",
-            "est_alt": "#fd8d3c",
-            "est_est": "#e31a1c",
+            "alt_alt": "#525252",
+            "alt_est": "#969696",
+            "est_alt": "#cccccc",
+            "est_est": "#f7f7f7",
         }
 
     plot_fill = {
