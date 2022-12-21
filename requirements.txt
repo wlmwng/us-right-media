@@ -1,3 +1,4 @@
 plotnine==0.8.0
 leidenalg==0.8.8
 pyldavis==3.3.1
+shifterator=0.3.0
